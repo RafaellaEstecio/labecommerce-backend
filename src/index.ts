@@ -1,6 +1,6 @@
-import { user } from "./databse";
-import { product } from "./databse";
-import { purchase } from "./databse";
+import { user } from "./database";
+import { product } from "./database";
+import { purchase } from "./database";
 
 console.log(user);
 console.log(product);

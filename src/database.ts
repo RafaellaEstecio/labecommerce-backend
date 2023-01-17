@@ -1,4 +1,6 @@
-import { TProduct, TPurchase, TUser } from "./types";
+import { TProduct, TPurchase, TUser, category} from "./types";
+
+
 
 export const user: TUser[] = [
     {
@@ -16,15 +18,15 @@ export const user: TUser[] = [
 export const product: TProduct[] = [
     {
         id: 'p001',
-        name: 'panela',
+        name: 'calça',
         price: 100,
-        category: 'cozinha'
+        category: category.CLOTHES_AND_SHOES
     },
     {
         id: 'p002',
-        name: 'sofa',
+        name: 'monitor',
         price: 1000,
-        category: 'sala'
+        category: category.ELECTRONICS
     }
 ]
 
