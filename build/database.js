@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductById = exports.getAllProducts = exports.createProduct = exports.getAllUsers = exports.createUser = exports.purchase = exports.product = exports.users = void 0;
+exports.getAllPurchasesFromUserId = exports.createPurchase = exports.queryProductsByName = exports.getProductById = exports.getAllProducts = exports.createProduct = exports.getAllUsers = exports.createUser = exports.purchase = exports.product = exports.users = void 0;
 const types_1 = require("./types");
 exports.users = [
     {
@@ -77,4 +77,30 @@ function getProductById(id) {
     return undefined;
 }
 exports.getProductById = getProductById;
+function queryProductsByName(name) {
+    let buscaNomeProduct = exports.product.filter((q) => q.name.includes(name));
+    if (buscaNomeProduct.length > 0) {
+        return buscaNomeProduct;
+    }
+    return undefined;
+}
+exports.queryProductsByName = queryProductsByName;
+function createPurchase(userId, productId, quantity, totalPrice) {
+    exports.purchase.push({
+        userId: userId,
+        productId: productId,
+        quantity: quantity,
+        totalPrice: totalPrice
+    });
+    return "Compra realizada com sucesso";
+}
+exports.createPurchase = createPurchase;
+function getAllPurchasesFromUserId(userId) {
+    let userIdToSearch = exports.purchase.filter((u) => u.userId === userId);
+    if (userIdToSearch.length > 0) {
+        return userIdToSearch;
+    }
+    return undefined;
+}
+exports.getAllPurchasesFromUserId = getAllPurchasesFromUserId;
 //# sourceMappingURL=database.js.map

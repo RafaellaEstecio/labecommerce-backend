@@ -79,3 +79,30 @@ export const purchase: TPurchase[] = [
    return undefined
    
  }
+
+ export function queryProductsByName(name: string){
+    let buscaNomeProduct = product.filter((q) => q.name.includes(name))
+    if(buscaNomeProduct.length > 0){
+        return buscaNomeProduct
+       } 
+       return undefined
+ }
+
+ export function createPurchase(userId: string, productId: string, quantity: number, totalPrice: number){
+    purchase.push(  {
+        userId: userId,
+        productId: productId,
+        quantity: quantity,
+        totalPrice:  totalPrice
+    });
+    return "Compra realizada com sucesso"
+ }
+
+ export function getAllPurchasesFromUserId(userId: string){
+    let userIdToSearch= purchase.filter((u) => u.userId ===userId)
+    if(userIdToSearch.length > 0){
+     return userIdToSearch
+    } 
+    return undefined
+    
+  }
