@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.purchase = exports.product = exports.user = void 0;
+exports.getProductById = exports.getAllProducts = exports.createProduct = exports.getAllUsers = exports.createUser = exports.purchase = exports.product = exports.users = void 0;
 const types_1 = require("./types");
-exports.user = [
+exports.users = [
     {
         id: 'u001',
         email: 'bruna@email.com',
@@ -26,7 +26,7 @@ exports.product = [
         name: 'monitor',
         price: 1000,
         category: types_1.category.ELECTRONICS
-    }
+    },
 ];
 exports.purchase = [
     {
@@ -42,4 +42,39 @@ exports.purchase = [
         totalPrice: 200
     }
 ];
+function createUser(idNovo, emailNovo, passwordNovo) {
+    exports.users.push({
+        id: idNovo,
+        email: emailNovo,
+        password: passwordNovo
+    });
+    return "Cadastro realizado com sucesso";
+}
+exports.createUser = createUser;
+function getAllUsers() {
+    return exports.users;
+}
+exports.getAllUsers = getAllUsers;
+function createProduct(id, name, price, category) {
+    exports.product.push({
+        id: id,
+        name: name,
+        price: price,
+        category: category
+    });
+    return "Produto cadastro realizado com sucesso";
+}
+exports.createProduct = createProduct;
+function getAllProducts() {
+    return exports.product;
+}
+exports.getAllProducts = getAllProducts;
+function getProductById(id) {
+    let produto = exports.product.filter((p) => p.id === id);
+    if (produto.length > 0) {
+        return produto;
+    }
+    return undefined;
+}
+exports.getProductById = getProductById;
 //# sourceMappingURL=database.js.map
