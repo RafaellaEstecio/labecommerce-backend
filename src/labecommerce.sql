@@ -109,16 +109,25 @@ WHERE id = 001;
 -- Edit User by id
 -- mocke valores para editar um user
 -- edite a linha baseada nos valores mockados
-REPLACE INTO users (id, name, email,password)
-VALUES('001', 'Kaio', 'kaio@email.com', 'kaio22');
+
+UPDATE users
+SET
+    name = "Kaio",
+    email = "kaio@email.com",
+    password = "kaio22"
+WHERE id = "001";
 
 
 -- Edit Product by id
 -- mocke valores para editar um product
 -- edite a linha baseada nos valores mockados
 
-REPLACE INTO products (id, name, price, category)
-VALUES('p01','Flauta', 80,'Sopro');
+UPDATE products
+SET
+    name = "Flauta",
+    price = 85,
+    category = "sopro"
+WHERE id = "p01";
 
 -- Get All Users
 -- retorna o resultado ordenado pela coluna email em ordem crescente
@@ -138,4 +147,54 @@ OFFSET 0;
 -- retorna os produtos com preços dentro do intervalo mockado em ordem crescente
 
 SELECT * FROM products
-WHERE price >=100 AND price <=300;
+WHERE price >= 100 AND price <= 300;
+
+-- Criação da tabela de pedidos
+-- nome da tabela: purchases
+-- colunas da tabela:
+-- id (TEXT, PK, único e obrigatório)
+-- total_price (REAL e obrigatório)
+-- paid (INTEGER e obrigatório)
+-- delivered_at (TEXT e opcional)
+-- buyer_id (TEXT, obrigatório e FK = referencia a coluna id da tabela users)
+
+CREATE TABLE purchases (
+    id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    total_price REAL NOT NULL,
+    paid INTEGER NOT NULL,
+    delivered_at TEXT ,
+    buyer_id TEXT NOT NULL,
+    FOREIGN KEY (buyer_id) REFERENCES users (id)
+);
+
+SELECT * FROM purchases;
+-- a) Crie dois pedidos para cada usuário cadastrado
+-- No mínimo 4 no total (ou seja, pelo menos 2 usuários diferentes) e 
+-- devem iniciar com a data de entrega nula.
+INSERT INTO purchases (id, total_price, paid, delivered_at, buyer_id)
+VALUES
+('101', 4000, 1, NULL,'002' ),
+('102', 4000, 1, NULL,'003' ),
+('103', 4000, 1, NULL,'002'),
+('104', 4000, 1, NULL,'003' );
+
+-- b) Edite o status da data de entrega de um pedido
+-- Simule que o pedido foi entregue no exato momento da sua edição
+--  (ou seja, data atual).
+
+UPDATE purchases
+SET
+    delivered_at = DATE("now")
+WHERE id = "101";
+
+UPDATE purchases
+SET
+    delivered_at = DATETIME("now")
+WHERE id <> "101";
+
+-- Crie a query de consulta utilizando junção para simular um endpoint de histórico de compras de um determinado usuário.
+-- Mocke um valor para a id do comprador, ela deve ser uma das que foram utilizadas no exercício 2.
+SELECT * from users
+INNER JOIN purchases
+ON purchases.buyer_id =users.id
+WHERE users.id = "002";
