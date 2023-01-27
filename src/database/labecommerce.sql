@@ -207,6 +207,51 @@ WHERE id <> "101";
 -- Crie a query de consulta utilizando junção para simular um endpoint de histórico de compras de um determinado usuário.
 -- Mocke um valor para a id do comprador, ela deve ser uma das que foram utilizadas no exercício 2.
 SELECT * from users
-INNER JOIN purchases
-ON purchases.buyer_id =users.id
+INNER JOIN purchases ON purchases.buyer =users.id
 WHERE users.id = "002";
+
+-- Criação da tabela de relações
+-- nome da tabela: purchases_products
+-- colunas da tabela:
+-- purchase_id (TEXT e obrigatório, não deve ser único)
+-- product_id (TEXT e obrigatório, não deve ser único)
+-- quantity (INTEGER e obrigatório, não deve ser único)
+CREATE TABLE purchases_products (
+    purchase_id TEXT NOT NULL,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL
+);
+
+-- Inserção dos dados
+-- Popule sua tabela purchases_products simulando 3 compras de clientes.
+
+-- Consulta com junção INNER JOIN
+-- Mostre em uma query todas as colunas das tabelas relacionadas (purchases_products, purchases e products).
+
+INSERT INTO purchases_products (purchase_id, product_id, quantity)
+VALUES
+('101','p01', 2 ),
+('102', 'p02', 1 ),
+('103','p02', 3 );
+
+INSERT INTO purchases_products (purchase_id, product_id, quantity)
+VALUES
+('101','p02',1);
+
+SELECT 
+    * 
+FROM 
+    purchases AS pur
+INNER JOIN purchases_products AS pur_pro ON pur.id = pur_pro.purchase_id
+INNER JOIN products AS pro ON pro.id = pur_pro.product_id;
+
+SELECT
+    pro.id,
+    pro.name,
+    pro.price,
+    pro.description,
+    pro.imageUrl,
+    pur_pro.quantity
+FROM products AS pro
+INNER JOIN purchases_products AS pur_pro ON pur_pro.product_id = pro.id
+WHERE pur_pro.purchase_id = "101"

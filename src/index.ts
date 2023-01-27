@@ -39,7 +39,9 @@ app.get("/ping", async (req: Request, res: Response) => {
 
 app.get("/users", async (req:Request, res:Response)=>{
     try{
-        const result = await db.raw(`SELECT * FROM users`)
+        // const result = await db.raw(`SELECT * FROM users`)
+
+        const result = await db("users")
 
         res.status(200).send(result)
     } catch (error) {
@@ -67,7 +69,9 @@ app.get("/users", async (req:Request, res:Response)=>{
 
 app.get("/products", async (req:Request, res:Response)=>{
     try{
-        const result = await db.raw(`SELECT * FROM products`)
+        // const result = await db.raw(`SELECT * FROM products`)
+
+        const result = await db("products")
 
         res.status(200).send(result)
     } catch (error) {
@@ -255,10 +259,12 @@ app.post("/products", async (req: Request, res: Response) => {
             throw new Error("'id', 'price' , 'description' ou 'imageUrl' devem possuir no mínimo 1 caractere")
         }
 
-        await db.raw(`
-            INSERT INTO products (id, name, price, description, imageUrl)
-            VALUES ("${id}", "${name}", ${price},"${description}", "${imageUrl}");
-        `)
+        // await db.raw(`
+        //     INSERT INTO products (id, name, price, description, imageUrl)
+        //     VALUES ("${id}", "${name}", ${price},"${description}", "${imageUrl}");
+        // `)
+
+        await db("products").insert({id, name, price, description, imageUrl})
 
         res.status(200).send("Produto cadastrado com sucesso")
     } catch (error) {
@@ -324,7 +330,7 @@ app.post("/purchases", async (req: Request, res: Response) => {
 
         if (typeof paid !== "number") {
             res.status(400)
-            throw new Error("senha inválida, deve ser string")
+            throw new Error("paid deve ser um number")
         }
 
         if (id.length < 1 || buyer < 1 || totalPrice < 1 || paid < 1 || createdAt.length <1) {
@@ -332,10 +338,12 @@ app.post("/purchases", async (req: Request, res: Response) => {
             throw new Error("'id', 'buyer' , 'totalPrice' ou 'paid' devem possuir no mínimo 1 caractere")
         }
 
-        await db.raw(`
-            INSERT INTO purchases (id, buyer, totalPrice, paid, createdAt)
-            VALUES ("${id}", ${buyer}, ${totalPrice},${paid}, "${createdAt}");
-        `)
+        // await db.raw(`
+        //     INSERT INTO purchases (id, buyer, totalPrice, paid, createdAt)
+        //     VALUES ("${id}", ${buyer}, ${totalPrice},${paid}, "${createdAt}");
+        // `)
+
+        await db("purchases").insert({id, buyer, totalPrice, paid, createdAt})
 
         res.status(201).send("Compra cadastrada com sucesso")
     } catch (error) {
@@ -405,12 +413,124 @@ app.get("/users/:id/purchases", async (req:Request, res:Response)=>{
     try {
         const buscaPurchasesUser = req.params.id
 
-        const purchasesUser = await db.raw(`
-        SELECT * FROM purchases
-        WHERE buyer = "${buscaPurchasesUser}";
-    `)
+    //     const purchasesUser = await db.raw(`
+    //     SELECT * FROM purchases
+    //     WHERE buyer = "${buscaPurchasesUser}";
+    // `)
+
+        const purchasesUser = await db("purchases").where({buyer:buscaPurchasesUser})
+
         if (purchasesUser) {
             res.status(200).send(purchasesUser)
+        } else {
+            res.status(404)
+            throw new Error("Compra não encontrada");
+
+        }
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+})
+
+// method HTTP (GET)
+// path ("/purchases/:id")
+// response
+// status 200
+// um objeto contendo:
+// id da compra
+// valor total da compra
+// quando foi criada
+// status do pagamento
+// id de quem fez a compra
+// email de quem fez a compra
+// nome de quem fez a compra
+
+// app.get("/purchases/:id", async (req:Request, res:Response)=>{
+
+
+    
+//     try {
+//         const buscaPurchasesId = req.params.id
+
+//         const [purchasesId] = await db.raw(`
+//          SELECT * FROM purchases
+//          INNER JOIN users ON users.id = purchases.buyer
+//          WHERE purchases.buyer = "${buscaPurchasesId}"
+//         `)
+
+//         if (purchasesId) {
+//             res.status(200).send(purchasesId)
+//         } else {
+//             res.status(404)
+//             throw new Error("Compra não encontrada");
+
+//         }
+//     } catch (error) {
+//         console.log(error)
+
+//         if (req.statusCode === 200) {
+//             res.status(500)
+//         }
+
+//         if (error instanceof Error) {
+//             res.send(error.message)
+//         } else {
+//             res.send("Erro inesperado")
+//         }
+//     }
+// })
+
+
+// **Refatore o endpoint criado no exercício anterior para que o resultado bem sucedido também
+//  retorne a lista de produtos registrados na compra.
+
+app.get("/purchases/:id", async (req:Request, res:Response)=>{
+
+
+    
+    try {
+        const buscaPurchasesId = req.params.id
+
+        let [purchasesId] = await db.raw(`
+         SELECT 
+            purchases.id AS purchaseId,
+            purchases.totalPrice,
+            purchases.createdAt,
+            purchases.paid AS isPaid,
+            users.id AS buyerId,
+            users.email,
+            users.name
+         FROM purchases
+         INNER JOIN users ON users.id = purchases.buyer
+         WHERE purchases.id = "${buscaPurchasesId}"
+        `)
+
+        let listaProducts = await db.raw(`
+        SELECT
+            pro.id,
+            pro.name,
+            pro.price,
+            pro.description,
+            pro.imageUrl,
+            pur_pro.quantity
+        FROM products AS pro
+        INNER JOIN purchases_products AS pur_pro ON pur_pro.product_id = pro.id
+        WHERE pur_pro.purchase_id = "${buscaPurchasesId}"`)
+
+        purchasesId.productsList = listaProducts
+
+        if (purchasesId) {
+            res.status(200).send(purchasesId)
         } else {
             res.status(404)
             throw new Error("Compra não encontrada");
