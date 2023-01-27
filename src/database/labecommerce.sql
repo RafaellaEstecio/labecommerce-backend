@@ -10,8 +10,15 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    created_at DATE
 );
+
+INSERT INTO users (id, name, email, password, created_at)
+VALUES (5, "Beatriz", "beatriz@email.com","12aa", "2023-01-26 22:33:01");
+
+SELECT * FROM users;
+DROP table users;
 
 -- b) Populando a tabela de pessoas usuárias
 -- popule a tabela com pelo menos 3 users diferentes
@@ -30,21 +37,26 @@ VALUES
 -- price (REAL e obrigatório)
 -- category (TEXT e obrigatório)
 
+
 CREATE TABLE products (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
     name TEXT NOT NULL,
     price REAL NOT NULL,
-    category TEXT NOT NULL
+    description TEXT NOT NULL,
+    imageUrl TEXT NOT NULL
+
 );
+DROP TABLE products;
+DROP TABLE purchases;
 
 -- b) Populando a tabela de produtos
 -- popule a tabela com pelo menos 5 produtos diferentes
 
-INSERT INTO products (id, name, price, category)
+INSERT INTO products (id, name, price, description, imageUrl)
 VALUES
- ('p01','Piano', 7000,'Teclas'),
- ('p02','Bateria', 4000,'Percussão'),
- ('p03','Guitarra', 2500,'Cordas');
+ ('p01','Piano', 7000,'Teclas','http://localhost:3333/img/piano.jpg'),
+ ('p02','Bateria', 4000,'Percussão','http://localhost:3333/img/bateria.jpg'),
+ ('p03','Guitarra', 2500,'Cordas','http://localhost:3333/img/guitarra.jpg');
 
 -- Get All Users
 -- retorna todos os usuários cadastrados
@@ -160,23 +172,23 @@ WHERE price >= 100 AND price <= 300;
 
 CREATE TABLE purchases (
     id TEXT PRIMARY KEY UNIQUE NOT NULL,
-    total_price REAL NOT NULL,
+    buyer INTEGER NOT NULL,
+    totalPrice REAL NOT NULL,
+    createdAt DATE,
     paid INTEGER NOT NULL,
-    delivered_at TEXT ,
-    buyer_id TEXT NOT NULL,
-    FOREIGN KEY (buyer_id) REFERENCES users (id)
+    FOREIGN KEY (buyer) REFERENCES users (id)
 );
 
 SELECT * FROM purchases;
 -- a) Crie dois pedidos para cada usuário cadastrado
 -- No mínimo 4 no total (ou seja, pelo menos 2 usuários diferentes) e 
 -- devem iniciar com a data de entrega nula.
-INSERT INTO purchases (id, total_price, paid, delivered_at, buyer_id)
+INSERT INTO purchases (id, buyer, totalPrice, createdAt, paid)
 VALUES
-('101', 4000, 1, NULL,'002' ),
-('102', 4000, 1, NULL,'003' ),
-('103', 4000, 1, NULL,'002'),
-('104', 4000, 1, NULL,'003' );
+('101',"001", 4000,NULL, 0),
+('102',"002", 4000,NULL, 0 ),
+('103',"001", 4000,NULL, 0),
+('104', "002",4000,NULL, 0 );
 
 -- b) Edite o status da data de entrega de um pedido
 -- Simule que o pedido foi entregue no exato momento da sua edição
